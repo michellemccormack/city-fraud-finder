@@ -1036,6 +1036,33 @@ function renderPaymentColumnMapping(columns, previewRows) {
   const amountCol = autoDetect("amount", columns);
   
   let html = `
+    <div style="background:var(--bg); border:2px solid var(--primary); border-radius:8px; padding:16px; margin-bottom:20px;">
+      <div style="font-weight:600; color:var(--primary); margin-bottom:12px; font-size:15px;">⚠️ REQUIRED: Set Data Source & Tag</div>
+      <div class="csv-mapping" style="margin-bottom:12px;">
+        <label style="font-weight:600;">Data Source * <span style="color:var(--danger);">Required</span></label>
+        <select id="payment_data_source" required style="width:100%; padding:10px; font-size:14px; border:2px solid var(--primary);">
+          <option value="">-- SELECT DATA SOURCE --</option>
+          <option value="ma-comptroller">MA Comptroller</option>
+          <option value="boston-open-data">Boston Open Data</option>
+          <option value="eec">MA EEC</option>
+          <option value="usa-spending">USA Spending</option>
+        </select>
+        <div class="muted" style="font-size:12px; margin-top:4px;">Where did this data come from? (e.g., MA Comptroller website)</div>
+      </div>
+      <div class="csv-mapping">
+        <label style="font-weight:600;">Tag * <span style="color:var(--danger);">Required</span></label>
+        <select id="payment_tag" required style="width:100%; padding:10px; font-size:14px; border:2px solid var(--primary);">
+          <option value="">-- SELECT TAG --</option>
+          <option value="childcare">Childcare</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="autism/mental">Autism/Mental</option>
+          <option value="education">Education</option>
+        </select>
+        <div class="muted" style="font-size:12px; margin-top:4px;">What type of payments are these? (Used for filtering and auto-typing entities)</div>
+      </div>
+    </div>
+    
+    <div style="font-weight:600; margin-bottom:12px; margin-top:20px; color:var(--text);">Map CSV Columns:</div>
     <div class="csv-mapping">
       <label>Vendor/Payee Name *</label>
       <select id="payment_vendor" required>
@@ -1071,28 +1098,6 @@ function renderPaymentColumnMapping(columns, previewRows) {
         ${columns.map(c => `<option value="${c}">${c}</option>`).join("")}
       </select>
     </div>
-    <div class="csv-mapping">
-      <label>Data Source (optional)</label>
-      <select id="payment_data_source" style="width:100%; padding:8px;">
-        <option value="">-- Select data source --</option>
-        <option value="ma-comptroller">MA Comptroller</option>
-        <option value="boston-open-data">Boston Open Data</option>
-        <option value="eec">MA EEC</option>
-        <option value="usa-spending">USA Spending</option>
-      </select>
-      <div class="muted" style="font-size:11px; margin-top:4px;">Original data provider (e.g., MA Comptroller, Boston Open Data)</div>
-    </div>
-    <div class="csv-mapping">
-      <label>Tag (optional)</label>
-      <select id="payment_tag" style="width:100%; padding:8px;">
-        <option value="">-- No tag --</option>
-        <option value="childcare">Childcare</option>
-        <option value="healthcare">Healthcare</option>
-        <option value="autism/mental">Autism/Mental</option>
-        <option value="education">Education</option>
-      </select>
-      <div class="muted" style="font-size:11px; margin-top:4px;">Tag for filtering. New entities will be auto-typed based on tag (childcare→childcare, healthcare→health, etc.)</div>
-    </div>
   `;
   
   if (previewRows && previewRows.length > 0) {
@@ -1125,9 +1130,16 @@ async function ingestCsv() {
     // Payment upload
     const vendorCol = $("payment_vendor").value;
     const amountCol = $("payment_amount").value;
+    const dataSource = $("payment_data_source").value;
+    const tag = $("payment_tag").value;
     
     if (!vendorCol || !amountCol) {
-      alert("Vendor and Amount columns are required");
+      alert("❌ Vendor and Amount columns are required");
+      return;
+    }
+    
+    if (!dataSource || !tag) {
+      alert("❌ REQUIRED: Please select both Data Source and Tag before uploading!\n\nThese are needed for filtering and organizing your data.");
       return;
     }
     

@@ -19,7 +19,17 @@ from services.records_requests import build_request
 from services.entity_networks import find_name_based_clusters
 from connectors.csv_seed import CSVSeedConnector
 
-DB_URL = os.getenv("DB_URL", "sqlite:///./city_fraud_finder.db")
+# Use Railway's DATABASE_URL if available (PostgreSQL), otherwise fall back to SQLite
+# Railway automatically provides DATABASE_URL when PostgreSQL service is added
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("DB_URL")
+if DATABASE_URL:
+    # Railway provides postgres:// but SQLAlchemy needs postgresql://
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    DB_URL = DATABASE_URL
+else:
+    DB_URL = "sqlite:///./city_fraud_finder.db"
+
 ENGINE = make_engine(DB_URL)
 Base.metadata.create_all(ENGINE)
 

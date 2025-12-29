@@ -1149,8 +1149,10 @@ async function ingestCsv() {
         body: formData
       });
       
-      alert(`Success! Added ${res.added_payments} payments. System matched vendors to your entities.`);
+      alert(`✅ Success! Added ${res.added_payments} payments with data source "${dataSource}" and tag "${tag}".\n\nFilters will now show these options!`);
       $("uploadCsvPanel").style.display = "none";
+      // Force refresh filters immediately
+      await loadPaymentTags();
       await recompute();
       await refresh();
     } catch (e) {

@@ -27,11 +27,25 @@ if DATABASE_URL:
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     DB_URL = DATABASE_URL
+    print(f"🔌 Using PostgreSQL: {DB_URL.split('@')[1] if '@' in DB_URL else 'connected'}")
 else:
     DB_URL = "sqlite:///./city_fraud_finder.db"
+    print("🔌 Using SQLite (local development)")
 
-ENGINE = make_engine(DB_URL)
-Base.metadata.create_all(ENGINE)
+try:
+    ENGINE = make_engine(DB_URL)
+    Base.metadata.create_all(ENGINE)
+    print("✅ Database connection successful")
+except Exception as e:
+    print(f"❌ DATABASE ERROR: {e}")
+    import traceback
+    traceback.print_exc()
+    # Don't crash - try SQLite as fallback
+    if DB_URL.startswith("postgresql://"):
+        print("⚠️ PostgreSQL failed, falling back to SQLite")
+        DB_URL = "sqlite:///./city_fraud_finder.db"
+        ENGINE = make_engine(DB_URL)
+        Base.metadata.create_all(ENGINE)
 
 def load_city_config() -> Dict[str, Any]:
     with open("city_config.json", "r", encoding="utf-8") as f:

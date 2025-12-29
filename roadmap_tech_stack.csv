@@ -1,0 +1,17 @@
+Phase,Milestone,Deliverable,Owner,Dependencies,Status,Notes
+0,MVP scaffold,FastAPI + SQLite + static UI + ingest + scoring + records request,You,Python 3.10+,Done,Included
+0,Evidence-first core,EvidenceItem + provenance + identifiers + aliases,You,DB models,Done,Bottleneck-proof
+0,Matching system,Explainable fuzzy matching w/ confidence + reasons,You,services/matching.py,Done,Defensible
+0,Review queue,Approve/reject low-confidence matches (UI + endpoints),You,ReviewMatch table,Next,High leverage
+1,Portal adapters,Add MA/Boston spending datasets (Socrata/exports),You,Dataset schema,Planned,City-specific
+1,Browser CSV upload,Upload + map columns in UI,You,UI work,Planned,Removes file ops
+2,Entity networks,Graph clusters (shared address/officer/domain),You,More evidence types,Planned,Strong signal
+2,FOIA pipeline,"Track PRL requests, import responses",You,DB + UI,Planned,End-to-end
+
+Tech Stack,,,,,,
+Layer,Choice,Why,,,,
+Backend,FastAPI,"Fast dev, auto docs",,,,
+DB,SQLite (dev),Portable; swap to Postgres later,,,,
+ORM,SQLAlchemy,Reliable,,,,
+UI,Vanilla HTML/JS,No build step,,,,
+Ingest,CSV seeds + USAspending,Cross-city friendly,,,,

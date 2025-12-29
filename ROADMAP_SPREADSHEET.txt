@@ -1,0 +1,9 @@
+Phase	Milestone	Deliverable	Owner	Dependencies	Status	Notes
+0	MVP scaffold	FastAPI + SQLite + static UI + ingest + scoring + records request	You	Python 3.10+	Done	Complete
+0	Evidence-first core	EvidenceItem + provenance + identifiers + aliases	You	DB models	Done	Complete
+0	Matching system	Explainable fuzzy matching w/ confidence + reasons	You	services/matching.py	Done	Complete
+0	Review queue	Approve/reject low-confidence matches (UI + endpoints)	You	ReviewMatch table	Done	Complete
+0	Browser CSV upload	Upload + map columns in UI	You	UI work	Done	Complete - supports Entity & Payment data
+0	Entity networks	Graph clusters (shared address/officer/domain)	You	More evidence types	Done	Complete - name-based clustering
+1	Portal adapters	Add MA/Boston spending datasets (Socrata/exports)	You	Dataset schema	Planned	Manual CSV upload works for MVP
+1	FOIA pipeline	Track PRL requests, import responses	You	DB + UI	Planned	Records generation done, tracking removed per request

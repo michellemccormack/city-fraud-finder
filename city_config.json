@@ -1,0 +1,50 @@
+{
+  "boston_ma": {
+    "display_name": "Boston, MA",
+    "connectors": {
+      "childcare_providers_csv": {
+        "type": "csv_seed",
+        "entity_type": "childcare",
+        "filepath": "data/seeds/boston_childcare_providers.csv",
+        "mapping": {
+          "name": "Program Name",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "zip": "Zip",
+          "license_status": "Status",
+          "license_capacity": "Capacity",
+          "license_id": "License ID"
+        }
+      },
+      "health_providers_csv": {
+        "type": "csv_seed",
+        "entity_type": "health",
+        "filepath": "data/seeds/boston_health_providers.csv",
+        "mapping": {
+          "name": "Provider Name",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "zip": "Zip",
+          "npi": "NPI"
+        }
+      },
+      "usaspending_awards": {
+        "type": "usaspending",
+        "recipient_keywords": [
+          "BOSTON",
+          "HEALTH CENTER",
+          "CHILD CARE",
+          "DAYCARE"
+        ],
+        "fiscal_years": [
+          2023,
+          2024,
+          2025
+        ],
+        "limit_per_query": 50
+      }
+    }
+  }
+}

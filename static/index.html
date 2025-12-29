@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>City Fraud Finder</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --text-light: #9ca3af;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    
+    header { 
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .header-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .filters-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding-right: 12px;
+      border-right: 1px solid var(--border);
+    }
+    
+    .filters-group:last-child {
+      border-right: none;
+      padding-right: 0;
+    }
+    
+    .filters label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    select, input[type="text"], input[type="file"] {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    input[type="text"] {
+      min-width: 200px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    button:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-light);
+    }
+    
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    
+    .grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 24px; 
+      margin-top: 24px;
+    }
+    
+    @media (max-width: 1024px) { 
+      .grid { grid-template-columns: 1fr; } 
+      .filters-group {
+        border-right: none;
+        padding-right: 0;
+        width: 100%;
+      }
+      .filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+    
+    .card { 
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 16px;
+    }
+    
+    th { 
+      text-align: left;
+      padding: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+    }
+    
+    th:hover {
+      background: var(--bg);
+    }
+    
+    td { 
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    
+    tbody tr {
+      transition: background 0.15s;
+    }
+    
+    tbody tr:hover {
+      background: var(--bg);
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .muted { 
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    
+    .pill { 
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    
+    .pill-score {
+      font-weight: 600;
+    }
+    
+    .pill-score.high {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+    
+    .pill-score.medium {
+      background: #fffbeb;
+      color: #d97706;
+      border-color: #fde68a;
+    }
+    
+    .pill-score.low {
+      background: #f0fdf4;
+      color: #16a34a;
+      border-color: #bbf7d0;
+    }
+    
+    .pill-type {
+      background: #eff6ff;
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+    
+    a { 
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    .mono { 
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New";
+      white-space: pre-wrap;
+      font-size: 13px;
+    }
+    
+    .review-match { 
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: var(--bg);
+    }
+    
+    .review-match-header { 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .review-match-comparison { 
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    
+    .review-match-side { 
+      padding: 12px;
+      background: var(--surface);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    
+    button.small { 
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .csv-mapping { 
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 16px;
+      margin-top: 16px;
+      align-items: center;
+    }
+    
+    .csv-mapping label { 
+      font-weight: 500;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .csv-mapping select { 
+      width: 100%;
+    }
+    
+    .csv-preview-table { 
+      margin-top: 16px;
+      max-height: 300px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    
+    .csv-preview-table table { 
+      width: 100%;
+      font-size: 13px;
+      margin: 0;
+    }
+    
+    .csv-preview-table th { 
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+    
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    
+    .close-btn:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      background: var(--primary);
+      color: white;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="header-title">City Fraud Finder</div>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <div class="filters-group">
+        <label>City</label>
+        <select id="city"></select>
+      </div>
+      <div class="filters-group">
+        <label>Type</label>
+        <select id="type">
+          <option value="">All</option>
+          <option value="childcare">Childcare</option>
+          <option value="health">Health</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="filters-group">
+        <label>Data Source</label>
+        <select id="dataSourceFilter">
+          <option value="">All Sources</option>
+        </select>
+      </div>
+      <div class="filters-group">
+        <label>Tag</label>
+        <select id="paymentTagFilter">
+          <option value="">All Tags</option>
+        </select>
+      </div>
+      <div class="filters-group">
+        <input id="q" placeholder="Search name/address..." style="min-width: 200px;" />
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button id="refresh" class="btn-primary">Refresh</button>
+      <button id="score">Recompute Scores</button>
+      <button id="uploadCsvBtn" class="btn-primary">Upload CSV</button>
+      <button id="reviewQueueBtn">Review Queue<span id="reviewCount" class="badge"></span></button>
+      <button id="networksBtn">Entity Networks</button>
+      <button id="sourcesBtn" class="btn-small">Manage Sources</button>
+      <button id="ingest" class="btn-small">Ingest Sources</button>
+      <button id="cleanupBtn" class="btn-small">Cleanup</button>
+    </div>
+  </header>
+  
+  <div id="sourcesPanel" class="card" style="display:none; margin-bottom:24px;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Manage Data Sources</div>
+        <div class="muted" style="margin-top:4px;">Manage your data sources and tags</div>
+      </div>
+      <button id="closeSources" class="close-btn" title="Close">✕</button>
+    </div>
+    <div id="sourcesList"></div>
+  </div>
+
+  <div id="uploadCsvPanel" class="card" style="display:none; margin-bottom:24px;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Upload CSV File</div>
+        <div class="muted" style="margin-top:4px;">Upload entity data OR payment data</div>
+      </div>
+      <button id="closeUploadCsv" class="close-btn" title="Close">✕</button>
+    </div>
+    <div style="margin-top:16px;">
+      <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom:12px;" />
+      <div style="margin-bottom:12px;">
+        <label><input type="radio" name="csvType" value="entities" checked> Entity Data (licenses, directories)</label><br>
+        <label><input type="radio" name="csvType" value="payments"> Payment Data (vendor names + amounts)</label>
+      </div>
+      <button id="previewCsvBtn" disabled>Preview CSV</button>
+    </div>
+    <div id="csvPreviewArea" style="margin-top:16px; display:none;">
+      <div id="csvColumnMapping"></div>
+      <div style="margin-top:16px;">
+        <button id="ingestCsvBtn" class="btn-success">Ingest CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="networksPanel" class="card" style="display:none; margin-bottom:24px;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Entity Networks - Connected Entities</div>
+        <div class="muted" style="margin-top:4px;">Entities sharing names, addresses, or other connections</div>
+      </div>
+      <button id="closeNetworks" class="close-btn" title="Close">✕</button>
+    </div>
+    <div id="networksList"></div>
+  </div>
+
+  <div id="reviewQueuePanel" class="card" style="display:none; margin-bottom:24px;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Review Queue - Low Confidence Matches</div>
+        <div class="muted" style="margin-top:4px;">Review matches that need human verification</div>
+      </div>
+      <button id="closeReviewQueue" class="close-btn" title="Close">✕</button>
+    </div>
+    <div id="reviewQueueList"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Entities</div>
+          <div class="muted" id="count" style="margin-top:4px;">0 entities</div>
+        </div>
+      </div>
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-k="score">Score</th>
+            <th data-k="name">Name</th>
+            <th data-k="type">Type</th>
+            <th data-k="total_public_amount">Total $</th>
+            <th data-k="notes">Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Entity Detail</div>
+          <div class="muted" style="margin-top:4px;">Click an entity row to view details</div>
+        </div>
+      </div>
+      <div id="detail">
+        <div class="empty-state" style="padding:48px 24px;">
+          <div style="font-size:48px; margin-bottom:16px; opacity:0.3;">📋</div>
+          <div style="color:var(--text-muted);">Click an entity from the list to view details</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let state = { rows: [], sortKey: "score", sortDir: "desc" };
+
+async function api(path, opts={}) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function loadCities() {
+  const res = await api("/meta/cities");
+  $("city").innerHTML = res.cities.map(c => `<option value="${c.city_key}">${c.display_name}</option>`).join("");
+}
+function formatMoney(x) {
+  const n = Number(x || 0);
+  return n.toLocaleString(undefined, {style:"currency", currency:"USD", maximumFractionDigits:0});
+}
+function renderTable() {
+  const tbody = $("tbl").querySelector("tbody");
+  tbody.innerHTML = "";
+  const q = $("q").value.trim().toLowerCase();
+  let rows = state.rows;
+  if (q) rows = rows.filter(r => (r.name||"").toLowerCase().includes(q) || (r.address||"").toLowerCase().includes(q));
+
+  rows = rows.slice().sort((a,b) => {
+    const k = state.sortKey;
+    const dir = state.sortDir === "asc" ? 1 : -1;
+    const av = a[k] ?? "";
+    const bv = b[k] ?? "";
+    if (typeof av === "number" && typeof bv === "number") return dir*(av-bv);
+    return dir*String(av).localeCompare(String(bv));
+  });
+
+  $("count").textContent = `${rows.length} ${rows.length === 1 ? 'entity' : 'entities'}`;
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No entities found. Try adjusting your filters or upload some data.</td></tr>`;
+    return;
+  }
+  
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    const score = r.score || 0;
+    let scoreClass = "low";
+    if (score >= 50) scoreClass = "high";
+    else if (score >= 25) scoreClass = "medium";
+    
+    tr.innerHTML = `
+      <td><span class="pill pill-score ${scoreClass}">${score.toFixed(1)}</span></td>
+      <td><a href="#" data-id="${r.id}">${r.name||""}</a><div class="muted" style="margin-top:4px;">${r.address||""}</div></td>
+      <td><span class="pill pill-type">${r.type||""}</span></td>
+      <td style="font-weight:500;">${formatMoney(r.total_public_amount||0)}</td>
+      <td class="muted">${(r.notes||"").substring(0, 100)}${(r.notes||"").length > 100 ? "..." : ""}</td>
+    `;
+    tr.querySelector("a").addEventListener("click", async (e) => { e.preventDefault(); await showDetail(r.id); });
+    tbody.appendChild(tr);
+  }
+}
+async function loadPaymentTags() {
+  const city_key = $("city").value;
+  try {
+    const res = await api(`/payments/categories?city_key=${encodeURIComponent(city_key)}`);
+    
+    // Load data sources
+    const dataSourceSelect = $("dataSourceFilter");
+    const currentDataSource = dataSourceSelect.value;
+    dataSourceSelect.innerHTML = '<option value="">All Data Sources</option>' + 
+      (res.data_sources || []).map(ds => `<option value="${ds}">${ds}</option>`).join("");
+    if (currentDataSource) {
+      dataSourceSelect.value = currentDataSource;
+    }
+    
+    // Load tags
+    const tagSelect = $("paymentTagFilter");
+    const currentTag = tagSelect.value;
+    tagSelect.innerHTML = '<option value="">All Tags</option>' + 
+      (res.tags || []).map(t => `<option value="${t}">${t}</option>`).join("");
+    if (currentTag) {
+      tagSelect.value = currentTag;
+    }
+  } catch (e) {
+    console.error("Failed to load tags:", e);
+  }
+}
+
+async function loadSources() {
+  const city_key = $("city").value;
+  try {
+    const sources = await api(`/payments/by-source?city_key=${encodeURIComponent(city_key)}`);
+    const container = $("sourcesList");
+    
+    if (!sources.sources || sources.sources.length === 0) {
+      container.innerHTML = "<div class='empty-state'>No payment sources found. Upload data to get started.</div>";
+      return;
+    }
+    
+    container.innerHTML = sources.sources.map(s => {
+      const sourceId = s.source.replace(/[^a-zA-Z0-9]/g, '_');
+      return `
+        <div style="padding:16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600;">${s.source}</div>
+              <div class="muted" style="font-size:12px; margin-top:4px;">${s.count} records • Uploaded: ${s.first_created ? new Date(s.first_created).toLocaleDateString() : 'Unknown'}</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="text" id="sourceTag_${sourceId}" placeholder="Tag (e.g., childcare, mental)" style="padding:8px 12px; font-size:13px; width:200px; border:1px solid var(--border); border-radius:6px;">
+              <button onclick="updateSourceTag('${s.source.replace(/'/g, "\\'")}', '${sourceId}')" class="btn-primary btn-small">Set Tag</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  } catch (e) {
+    console.error("Failed to load sources:", e);
+    $("sourcesList").innerHTML = `<div class="muted">Error loading sources: ${e.message}</div>`;
+  }
+}
+
+async function updateSourceTag(source, idPrefix) {
+  const input = $(`sourceTag_${idPrefix}`);
+  const tag = input.value.trim();
+  
+  if (!tag) {
+    alert("Please enter a tag name");
+    return;
+  }
+  
+  try {
+    const formData = new FormData();
+    formData.append("source", source);
+    formData.append("tag", tag);
+    formData.append("city_key", $("city").value);
+    
+    const res = await api("/payments/set-tag", {
+      method: "POST",
+      body: formData
+    });
+    
+    alert(`✅ Tagged ${res.updated} records from "${source}" with tag "${tag}"`);
+    await refresh();
+    await loadSources();
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+}
+
+async function refresh() {
+  const city_key = $("city").value;
+  const entity_type = $("type").value;
+  const data_source = $("dataSourceFilter").value || "";
+  const payment_tag = $("paymentTagFilter").value || "";
+  let url = `/entities?city_key=${encodeURIComponent(city_key)}&entity_type=${encodeURIComponent(entity_type)}&limit=500`;
+  if (data_source) url += `&data_source=${encodeURIComponent(data_source)}`;
+  if (payment_tag) url += `&payment_tag=${encodeURIComponent(payment_tag)}`;
+  const res = await api(url);
+  state.rows = res;
+  renderTable();
+  await loadPaymentTags();
+}
+async function showDetail(id) {
+  const city_key = $("city").value;
+  const res = await api(`/entities/${id}`);
+  const rr = await api(`/records-request/${id}?city_key=${encodeURIComponent(city_key)}`);
+  
+  const score = res.score || 0;
+  let scoreClass = "low";
+  if (score >= 50) scoreClass = "high";
+  else if (score >= 25) scoreClass = "medium";
+  
+  $("detail").innerHTML = `
+    <div style="margin-top:16px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <div style="font-weight:600; font-size:18px; flex:1;">${res.name}</div>
+        <span class="pill pill-score ${scoreClass}">${score.toFixed(1)}</span>
+        <span class="pill pill-type">${res.type||""}</span>
+      </div>
+      
+      <div class="muted" style="margin-bottom:16px;">
+        ${[res.address, res.city, res.state, res.zip].filter(Boolean).join(", ") || "No address"}
+      </div>
+      
+      <div style="padding:12px; background:var(--bg); border-radius:8px; margin-bottom:16px;">
+        <div style="font-weight:600; margin-bottom:4px;">Total Public Funding</div>
+        <div style="font-size:24px; font-weight:700; color:var(--primary);">${formatMoney(res.total_public_amount||0)}</div>
+      </div>
+      
+      ${res.score_notes ? `<div style="padding:12px; background:var(--bg); border-radius:8px; margin-bottom:16px; border-left:3px solid var(--primary);"><div class="muted">${res.score_notes}</div></div>` : ""}
+
+      <div style="margin-top:20px; margin-bottom:8px; font-weight:600; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Payments</div>
+      <div class="muted" style="margin-bottom:12px; font-size:12px;">${(res.payments||[]).length} ${(res.payments||[]).length === 1 ? 'payment' : 'payments'}</div>
+      <div style="max-height:250px; overflow:auto; border:1px solid var(--border); border-radius:8px; padding:12px; background:var(--bg);">
+        ${(res.payments||[]).length > 0 ? (res.payments||[]).map(p => `
+          <div style="padding:8px 0; border-bottom:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:500;">${formatMoney(p.amount||0)}</div>
+                <div class="muted" style="font-size:12px; margin-top:2px;">${p.fiscal_year||""} • ${p.source||""}${p.payer ? ` • ${p.payer}` : ""}</div>
+              </div>
+            </div>
+          </div>
+        `).join("") : "<div class='muted empty-state' style='padding:24px;'>No payments recorded</div>"}
+      </div>
+
+      <div style="margin-top:20px; margin-bottom:8px; font-weight:600; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Evidence</div>
+      <div class="muted" style="margin-bottom:12px; font-size:12px;">${(res.evidence||[]).length} ${(res.evidence||[]).length === 1 ? 'item' : 'items'}</div>
+      <div style="max-height:200px; overflow:auto; border:1px solid var(--border); border-radius:8px; padding:12px; background:var(--bg);">
+        ${(res.evidence||[]).length > 0 ? (res.evidence||[]).map(ev => `
+          <div style="padding:8px 0; border-bottom:1px solid var(--border);">
+            <span class="pill">${ev.evidence_type}</span>
+            <span class="muted" style="margin-left:8px;">${ev.source}${ev.title ? ` • ${ev.title}` : ""}</span>
+          </div>
+        `).join("") : "<div class='muted empty-state' style='padding:24px;'>No evidence items</div>"}
+      </div>
+
+      <div style="margin-top:20px; margin-bottom:8px; font-weight:600; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Records Request Draft</div>
+      <div class="mono" style="border:1px solid var(--border); border-radius:8px; padding:16px; margin-top:8px; background:var(--bg); max-height:300px; overflow:auto;">${rr.text.replaceAll("<","&lt;").replaceAll(">","&gt;")}</div>
+    </div>
+  `;
+}
+
+async function recompute() {
+  const city_key = $("city").value;
+  await api(`/score/recompute?city_key=${encodeURIComponent(city_key)}`, {method:"POST"});
+  await refresh();
+}
+async function ingestAll() {
+  const city_key = $("city").value;
+  await api(`/ingest/configured?city_key=${encodeURIComponent(city_key)}`, {method:"POST"});
+  await recompute();
+}
+
+document.querySelectorAll("th").forEach(th => {
+  th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    if (state.sortKey === k) state.sortDir = (state.sortDir === "asc" ? "desc" : "asc");
+    else { state.sortKey = k; state.sortDir = "desc"; }
+    renderTable();
+  });
+});
+
+async function loadReviewQueue() {
+  const city_key = $("city").value;
+  try {
+    const res = await api(`/review-queue?city_key=${encodeURIComponent(city_key)}`);
+    const count = res.matches ? res.matches.length : 0;
+    $("reviewCount").textContent = count > 0 ? count : "";
+    $("reviewCount").style.display = count > 0 ? "inline-flex" : "none";
+    
+    if ($("reviewQueuePanel").style.display !== "none") {
+      renderReviewQueue(res.matches || []);
+    }
+  } catch (e) {
+    console.error("Failed to load review queue:", e);
+  }
+}
+
+function renderReviewQueue(matches) {
+  const container = $("reviewQueueList");
+  if (matches.length === 0) {
+    container.innerHTML = "<div class='empty-state'>No matches pending review. All matches have been processed.</div>";
+    return;
+  }
+  
+  container.innerHTML = matches.map(m => `
+    <div class="review-match" data-match-id="${m.id}">
+      <div class="review-match-header">
+        <div>
+          <div style="font-weight:700;">${m.candidate_name || "Unknown"}</div>
+          <div class="muted" style="font-size:12px;">Source: ${m.candidate_source} • Confidence: ${(m.confidence * 100).toFixed(0)}%</div>
+        </div>
+        <div>
+          <button class="small btn-success" onclick="approveMatch(${m.id})">✓ Approve</button>
+          <button class="small btn-danger" onclick="rejectMatch(${m.id})">✗ Reject</button>
+        </div>
+      </div>
+      <div class="muted" style="font-size:12px; margin-top:4px;">${m.reason || "No reason provided"}</div>
+      ${m.entity_id ? `
+        <div class="review-match-comparison">
+          <div class="review-match-side">
+            <div class="muted" style="font-size:11px; margin-bottom:4px;">CANDIDATE (from ${m.candidate_source})</div>
+            <div><strong>${m.candidate_name || ""}</strong></div>
+            <div class="muted" style="font-size:12px;">${m.candidate_address || "No address"}</div>
+          </div>
+          <div class="review-match-side">
+            <div class="muted" style="font-size:11px; margin-bottom:4px;">MATCHED ENTITY</div>
+            <div><strong>${m.entity_name || "Unknown"}</strong> <span class="pill">${m.entity_type || ""}</span></div>
+            <div class="muted" style="font-size:12px;">${m.entity_address || "No address"}</div>
+          </div>
+        </div>
+      ` : `<div class="muted" style="margin-top:8px;">No entity matched - will create new entity if approved</div>`}
+    </div>
+  `).join("");
+}
+
+async function approveMatch(matchId) {
+  if (!confirm("Approve this match?")) return;
+  try {
+    await api(`/review-queue/${matchId}/approve`, {method:"POST"});
+    await loadReviewQueue();
+    await refresh();
+    alert("Match approved!");
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+}
+
+async function rejectMatch(matchId) {
+  if (!confirm("Reject this match?")) return;
+  try {
+    await api(`/review-queue/${matchId}/reject`, {method:"POST"});
+    await loadReviewQueue();
+    alert("Match rejected!");
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+}
+
+let csvPreviewData = null;
+
+$("csvFileInput").addEventListener("change", (e) => {
+  $("previewCsvBtn").disabled = !e.target.files.length;
+});
+
+async function previewCsv() {
+  const fileInput = $("csvFileInput");
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert("Please select a CSV file first");
+    return;
+  }
+  
+  const csvType = document.querySelector('input[name="csvType"]:checked').value;
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+  
+  try {
+    const res = await api("/upload/csv/preview", {
+      method: "POST",
+      body: formData
+    });
+    
+    csvPreviewData = { ...res, csvType };
+    if (csvType === "payments") {
+      renderPaymentColumnMapping(res.columns, res.preview_rows);
+    } else {
+      renderColumnMapping(res.columns, res.preview_rows);
+    }
+    $("csvPreviewArea").style.display = "block";
+  } catch (e) {
+    alert("Error previewing CSV: " + e.message);
+  }
+}
+
+function renderColumnMapping(columns, previewRows) {
+  const mapping = $("csvColumnMapping");
+  
+  const entityTypes = ["childcare", "health", "other"];
+  
+  // Auto-detect common column names
+  const autoDetect = (field, columns) => {
+    const patterns = {
+      name: ["name", "provider name", "program name", "entity name", "business name"],
+      address: ["address", "street", "street address"],
+      city: ["city"],
+      state: ["state"],
+      zip: ["zip", "zip code", "postal code", "postcode"],
+      license_status: ["status", "license status", "license_state"],
+      license_capacity: ["capacity", "max capacity", "license capacity", "licensed capacity"],
+      license_id: ["license id", "license_id", "license number", "license_number", "license"],
+      npi: ["npi", "national provider identifier"]
+    };
+    
+    const patternsForField = patterns[field] || [];
+    for (const pattern of patternsForField) {
+      const found = columns.find(c => c.toLowerCase().trim() === pattern);
+      if (found) return found;
+    }
+    return "";
+  };
+  
+  const fieldMappings = [
+    {field: "name", label: "Name *", required: true},
+    {field: "address", label: "Address", required: false},
+    {field: "city", label: "City", required: false},
+    {field: "state", label: "State", required: false},
+    {field: "zip", label: "Zip", required: false},
+    {field: "license_status", label: "License Status", required: false},
+    {field: "license_capacity", label: "License Capacity", required: false},
+    {field: "license_id", label: "License ID", required: false},
+    {field: "npi", label: "NPI", required: false}
+  ];
+  
+  let html = `
+    <div class="csv-mapping">
+      <label>Entity Type *</label>
+      <select id="csvEntityType">
+        ${entityTypes.map(t => `<option value="${t}">${t}</option>`).join("")}
+      </select>
+    </div>
+  `;
+  
+  fieldMappings.forEach(fm => {
+    const autoSelected = autoDetect(fm.field, columns);
+    html += `
+      <div class="csv-mapping">
+        <label>${fm.label}</label>
+        <select id="csv_${fm.field}" ${fm.required ? "required" : ""}>
+          <option value="">-- None --</option>
+          ${columns.map(c => `<option value="${c}" ${c === autoSelected ? "selected" : ""}>${c}</option>`).join("")}
+        </select>
+      </div>
+    `;
+  });
+  
+  if (previewRows && previewRows.length > 0) {
+    html += `
+      <div class="csv-preview-table">
+        <table>
+          <thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${previewRows.map(row => `<tr>${columns.map(c => `<td>${(row[c] || "").substring(0, 50)}</td>`).join("")}</tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  
+  mapping.innerHTML = html;
+}
+
+function renderPaymentColumnMapping(columns, previewRows) {
+  const mapping = $("csvColumnMapping");
+  
+  const autoDetect = (field, columns) => {
+    const patterns = {
+      vendor: ["vendor", "payee", "recipient", "name", "company"],
+      amount: ["amount", "total", "payment", "sum"],
+      date: ["date", "payment date", "paid date"],
+      fiscal_year: ["fiscal year", "fy", "year"],
+      program: ["program", "department", "appropriation"],
+      payer: ["payer", "payor", "source"]
+    };
+    const patternsForField = patterns[field] || [];
+    for (const pattern of patternsForField) {
+      const found = columns.find(c => c.toLowerCase().trim() === pattern);
+      if (found) return found;
+    }
+    return "";
+  };
+  
+  const vendorCol = autoDetect("vendor", columns);
+  const amountCol = autoDetect("amount", columns);
+  
+  let html = `
+    <div class="csv-mapping">
+      <label>Vendor/Payee Name *</label>
+      <select id="payment_vendor" required>
+        <option value="">-- None --</option>
+        ${columns.map(c => `<option value="${c}" ${c === vendorCol ? "selected" : ""}>${c}</option>`).join("")}
+      </select>
+    </div>
+    <div class="csv-mapping">
+      <label>Amount *</label>
+      <select id="payment_amount" required>
+        <option value="">-- None --</option>
+        ${columns.map(c => `<option value="${c}" ${c === amountCol ? "selected" : ""}>${c}</option>`).join("")}
+      </select>
+    </div>
+    <div class="csv-mapping">
+      <label>Date (optional)</label>
+      <select id="payment_date">
+        <option value="">-- None --</option>
+        ${columns.map(c => `<option value="${c}">${c}</option>`).join("")}
+      </select>
+    </div>
+    <div class="csv-mapping">
+      <label>Fiscal Year (optional)</label>
+      <select id="payment_fy">
+        <option value="">-- None --</option>
+        ${columns.map(c => `<option value="${c}">${c}</option>`).join("")}
+      </select>
+    </div>
+    <div class="csv-mapping">
+      <label>Program/Department (optional)</label>
+      <select id="payment_program">
+        <option value="">-- None --</option>
+        ${columns.map(c => `<option value="${c}">${c}</option>`).join("")}
+      </select>
+    </div>
+    <div class="csv-mapping">
+      <label>Data Source (optional)</label>
+      <select id="payment_data_source" style="width:100%; padding:8px;">
+        <option value="">-- Select data source --</option>
+        <option value="ma-comptroller">MA Comptroller</option>
+        <option value="boston-open-data">Boston Open Data</option>
+        <option value="eec">MA EEC</option>
+        <option value="usa-spending">USA Spending</option>
+      </select>
+      <div class="muted" style="font-size:11px; margin-top:4px;">Original data provider (e.g., MA Comptroller, Boston Open Data)</div>
+    </div>
+    <div class="csv-mapping">
+      <label>Tag (optional)</label>
+      <select id="payment_tag" style="width:100%; padding:8px;">
+        <option value="">-- No tag --</option>
+        <option value="childcare">Childcare</option>
+        <option value="healthcare">Healthcare</option>
+        <option value="autism/mental">Autism/Mental</option>
+        <option value="education">Education</option>
+      </select>
+      <div class="muted" style="font-size:11px; margin-top:4px;">Tag for filtering. New entities will be auto-typed based on tag (childcare→childcare, healthcare→health, etc.)</div>
+    </div>
+  `;
+  
+  if (previewRows && previewRows.length > 0) {
+    html += `
+      <div class="csv-preview-table">
+        <table>
+          <thead><tr>${columns.map(c => `<th>${c}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${previewRows.map(row => `<tr>${columns.map(c => `<td>${(row[c] || "").substring(0, 50)}</td>`).join("")}</tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  
+  mapping.innerHTML = html;
+}
+
+async function ingestCsv() {
+  const fileInput = $("csvFileInput");
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert("Please select a CSV file");
+    return;
+  }
+  
+  const csvType = csvPreviewData?.csvType || document.querySelector('input[name="csvType"]:checked').value;
+  const city_key = $("city").value;
+  
+  if (csvType === "payments") {
+    // Payment upload
+    const vendorCol = $("payment_vendor").value;
+    const amountCol = $("payment_amount").value;
+    
+    if (!vendorCol || !amountCol) {
+      alert("Vendor and Amount columns are required");
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("city_key", city_key);
+    formData.append("vendor_column", vendorCol);
+    formData.append("amount_column", amountCol);
+    formData.append("date_column", $("payment_date").value || "");
+    formData.append("fiscal_year_column", $("payment_fy").value || "");
+    formData.append("program_column", $("payment_program").value || "");
+    formData.append("payer_column", "");
+    formData.append("data_source", $("payment_data_source").value || "");
+    formData.append("tag", $("payment_tag").value || "");
+    
+    try {
+      const res = await api("/upload/payments-csv/ingest", {
+        method: "POST",
+        body: formData
+      });
+      
+      alert(`Success! Added ${res.added_payments} payments. System matched vendors to your entities.`);
+      $("uploadCsvPanel").style.display = "none";
+      await recompute();
+      await refresh();
+    } catch (e) {
+      alert("Error ingesting payments CSV: " + e.message);
+    }
+  } else {
+    // Entity upload (existing code)
+    const nameCol = $(`csv_name`).value;
+    if (!nameCol) {
+      alert("Name column is required");
+      return;
+    }
+    
+    const entity_type = $(`csvEntityType`).value;
+    
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("city_key", city_key);
+    formData.append("entity_type", entity_type);
+    formData.append("name_column", nameCol);
+    formData.append("address_column", $(`csv_address`).value || "");
+    formData.append("city_column", $(`csv_city`).value || "");
+    formData.append("state_column", $(`csv_state`).value || "");
+    formData.append("zip_column", $(`csv_zip`).value || "");
+    formData.append("license_status_column", $(`csv_license_status`).value || "");
+    formData.append("license_capacity_column", $(`csv_license_capacity`).value || "");
+    formData.append("license_id_column", $(`csv_license_id`).value || "");
+    formData.append("npi_column", $(`csv_npi`).value || "");
+    
+    try {
+      const res = await api("/upload/csv/ingest", {
+        method: "POST",
+        body: formData
+      });
+      
+      alert(`Success! Added ${res.added_entities} entities and ${res.added_evidence} evidence items.`);
+      $("uploadCsvPanel").style.display = "none";
+      await recompute();
+      await refresh();
+    } catch (e) {
+      alert("Error ingesting CSV: " + e.message);
+    }
+  }
+}
+
+$("uploadCsvBtn").addEventListener("click", () => {
+  const panel = $("uploadCsvPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if (panel.style.display === "none") {
+    $("csvFileInput").value = "";
+    $("csvPreviewArea").style.display = "none";
+    csvPreviewData = null;
+  }
+});
+
+$("closeUploadCsv").addEventListener("click", () => {
+  $("uploadCsvPanel").style.display = "none";
+  $("csvFileInput").value = "";
+  $("csvPreviewArea").style.display = "none";
+  csvPreviewData = null;
+});
+
+$("previewCsvBtn").addEventListener("click", previewCsv);
+$("ingestCsvBtn").addEventListener("click", ingestCsv);
+
+async function cleanupDuplicates() {
+  const source = prompt("Enter source pattern to clean (e.g., 'EEC' or filename):", "EEC");
+  if (!source) return;
+  
+  if (!confirm(`This will remove duplicate payments from sources containing "${source}". Continue?`)) return;
+  
+  try {
+    const res = await api(`/cleanup/duplicate-payments?source_pattern=${encodeURIComponent(source)}`, {method: "POST"});
+    alert(`Cleanup complete! Deleted ${res.deleted} duplicate payments. ${res.remaining} payments remaining.`);
+    await recompute();
+    await refresh();
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+}
+
+$("cleanupBtn").addEventListener("click", cleanupDuplicates);
+
+$("sourcesBtn").addEventListener("click", () => {
+  const panel = $("sourcesPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if (panel.style.display === "block") {
+    loadSources();
+  }
+});
+
+$("closeSources").addEventListener("click", () => {
+  $("sourcesPanel").style.display = "none";
+});
+
+async function loadEntityNetworks() {
+  const city_key = $("city").value;
+  const entity_type = $("type").value || undefined;
+  try {
+    const url = `/entity-networks?city_key=${encodeURIComponent(city_key)}${entity_type ? `&entity_type=${encodeURIComponent(entity_type)}` : ""}`;
+    const res = await api(url);
+    renderEntityNetworks(res.clusters || []);
+  } catch (e) {
+    console.error("Failed to load entity networks:", e);
+    $("networksList").innerHTML = `<div class="muted">Error loading networks: ${e.message}</div>`;
+  }
+}
+
+function renderEntityNetworks(clusters) {
+  const container = $("networksList");
+  if (clusters.length === 0) {
+    container.innerHTML = "<div class='empty-state'>No entity clusters found. Entities need to share names, addresses, or other identifiers to form clusters.</div>";
+    return;
+  }
+  
+  container.innerHTML = clusters.map((cluster, idx) => `
+    <div class="review-match" style="margin-bottom:16px;">
+      <div class="review-match-header">
+        <div>
+          <div style="font-weight:700;">Cluster ${idx + 1}: ${cluster.entity_count} connected entities</div>
+          ${cluster.shared_patterns && cluster.shared_patterns.length > 0 ? 
+            `<div class="muted" style="font-size:12px;">Shared patterns: ${cluster.shared_patterns.join(", ")}</div>` : 
+            `<div class="muted" style="font-size:12px;">Connected entities</div>`}
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        ${cluster.entities.map(e => `
+          <div style="padding:12px; background:var(--surface); border-radius:8px; border:1px solid var(--border); margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <strong><a href="#" onclick="event.preventDefault(); showDetail(${e.id}); return false;">${e.name || "Unknown"}</a></strong>
+              <span class="pill pill-type">${e.type || ""}</span>
+            </div>
+            ${e.address ? `<div class="muted" style="font-size:12px; margin-top:4px;">${e.address}</div>` : ""}
+            ${e.license_id ? `<div class="muted" style="font-size:12px; margin-top:4px;">License: ${e.license_id}</div>` : ""}
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+$("networksBtn").addEventListener("click", () => {
+  const panel = $("networksPanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if (panel.style.display === "block") {
+    loadEntityNetworks();
+  }
+});
+
+$("closeNetworks").addEventListener("click", () => {
+  $("networksPanel").style.display = "none";
+});
+
+$("reviewQueueBtn").addEventListener("click", () => {
+  const panel = $("reviewQueuePanel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if (panel.style.display === "block") {
+    loadReviewQueue();
+  }
+});
+
+$("closeReviewQueue").addEventListener("click", () => {
+  $("reviewQueuePanel").style.display = "none";
+});
+
+$("refresh").addEventListener("click", refresh);
+$("score").addEventListener("click", recompute);
+$("ingest").addEventListener("click", ingestAll);
+$("q").addEventListener("input", renderTable);
+$("paymentTagFilter").addEventListener("change", refresh);
+$("dataSourceFilter").addEventListener("change", refresh);
+
+(async function boot(){ 
+  await loadCities(); 
+  await loadPaymentTags();
+  await refresh();
+  await loadReviewQueue();
+})();
+</script>
+</body>
+</html>
